@@ -4,52 +4,66 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Student, Group
-from .serializers import StudentSerializer, StudentNewSerializer, GroupSerializer
+from .serializers import StudentListSerializer, StudentDetailSerializer, GroupListSerializer, \
+    GroupCreateSerializer, StudentCreateSerializer
 
 
-# Create your views here.
-# class StudentAPIView(generics.ListCreateAPIView):
-#     queryset = Student.objects.all()
-#     serializer_class = StudentSerializer
+class StudentListAPIView(APIView):
+    def get(self, request):
+        model = Student.objects.all()
+        serializer = StudentListSerializer(model, many=True)
+        return Response(serializer.data)
 
-# class StudentAPIView(APIView):
-#     def get(self, request):
-#         model = Student.objects.all().values()
-#         return Response({'students': list(model)})
-#
-#     def post(self, request):
-#         serializer = StudentSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response({'student': serializer.data})
-#
-#     def put(self, request, *args, **kwargs):
-#         pk = kwargs.get("pk", None)
-#         if not pk:
-#             return Response({'error': 'Метод PUT не работает!'})
-#         try:
-#             instance = Student.objects.get(pk=pk)
-#         except:
-#             return Response({'error': 'Объект не найден!'})
-#
-#         serializer = StudentSerializer(data=request.data, instance=instance)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response({'student': serializer.data})
-#
-#     def delete(self, request, *args, **kwargs):
-#         pk = kwargs.get("pk", None)
-#         if not pk:
-#             return Response({'error': 'Метод DELETE не работает!'})
-#         try:
-#             instance = Student.objects.get(pk=pk)
-#         except:
-#             return Response({'error': 'Объект не найден!'})
-#
-#         instance.delete()
-#         return Response({'student': 'delete student with id = ' + str(pk)})
-#
-#
-class StudentAPIList(generics.UpdateAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+    def post(self, request):
+        serializer = StudentListSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class StudentDetailAPIView(APIView):
+    def get(self, request, pk):
+        student = Student.objects.get(id=pk)
+        serializer = StudentDetailSerializer(student)
+        return Response(serializer.data)
+
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({'error': 'Метод PUT не работает!'})
+        try:
+            instance = Student.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Объект не найден!'})
+
+        serializer = StudentDetailSerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'student': serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get("pk", None)
+        if not pk:
+            return Response({'error': 'Метод DELETE не работает!'})
+        try:
+            instance = Student.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Объект не найден!'})
+
+        instance.delete()
+        return Response({'student': 'delete student with id = ' + str(pk)})
+
+
+class GroupListAPIView(APIView):
+    def get(self, request):
+        group = Group.objects.all()
+        serializer = GroupListSerializer(group, many=True)
+        return Response(serializer.data)
+
+
+class GroupCreateAPIView(APIView):
+    def post(self, request):
+        serializer = GroupCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'group': serializer.data})
