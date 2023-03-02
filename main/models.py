@@ -3,10 +3,11 @@ from django.db import models
 
 # Create your models here.
 class Student(models.Model):
-    surname = models.CharField(max_length=50, verbose_name='Фамилия')
-    name = models.CharField(max_length=50, verbose_name='Имя')
-    patronymic = models.CharField(max_length=50, verbose_name='Отчество')
-    group = models.ForeignKey('Group', related_name='student', on_delete=models.CASCADE, verbose_name='Группа')
+    surname = models.CharField(max_length=50, verbose_name='Фамилия', null=True)
+    name = models.CharField(max_length=50, verbose_name='Имя', null=True)
+    patronymic = models.CharField(max_length=50, verbose_name='Отчество', null=True)
+    group = models.ForeignKey('Group', related_name='student', on_delete=models.CASCADE, verbose_name='Группа',
+                              null=True)
 
     def __str__(self):
         return f'{self.surname} {self.name} {self.patronymic}'
